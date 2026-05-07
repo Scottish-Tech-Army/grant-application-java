@@ -1,0 +1,74 @@
+# ──────────────────────────────────────────────
+#  CommonGrant Portal — Application Configuration
+# ──────────────────────────────────────────────
+
+spring:
+  profiles:
+    active: dev   # Change to 'prod' for PostgreSQL
+
+  # ── H2 in-memory DB (dev profile — zero setup needed) ──
+  datasource:
+    url: jdbc:h2:mem:commongrant;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true           # Access at http://localhost:8080/h2-console
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop   # Auto-creates schema on startup
+    show-sql: false
+    defer-datasource-initialization: true   # run data.sql AFTER Hibernate creates tables
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ── Seed data ──
+  sql:
+    init:
+      mode: always
+
+server:
+  port: 8080
+
+jwt:
+  secret: commongrant-hackathon-secret-key-32-chars-long!!
+  expiration-ms: 86400000   # 24 hours
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.commongrant: DEBUG
+    org.springframework.security: WARN
+
+---
+# ──────────────────────────────────────────────
+#  Production Profile (PostgreSQL)
+#  Run with: java -jar app.jar --spring.profiles.active=prod
+# ──────────────────────────────────────────────
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:commongrant}
+    username: ${DB_USER:commongrant_user}
+    password: ${DB_PASS:commongrant123}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update

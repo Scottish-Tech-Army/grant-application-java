@@ -1,0 +1,56 @@
+application:
+  name: Grant Application
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none   # IMPORTANT (we use schema.sql)
+    show-sql: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+error-config:
+  error-details:
+    - errorCode: "1001"
+      message: "Application Id is not present"
+      errorType: "NOT_FOUND"
+      httpStatus: 200
+    - errorCode: "1002"
+      message: "Common data Id is not present"
+      errorType: "NOT_FOUND"
+      httpStatus: 200
+    - errorCode: "1003"
+      message: "User Id is not present"
+      errorType: "NOT_FOUND"
+      httpStatus: 200
+    - errorCode: "1004"
+      message: "User is not part of specified Charity"
+      errorType: "NOT_FOUND"
+      httpStatus: 200
+    - errorCode: "1005"
+      message: "User is not part of specified Charity"
+      errorType: "NOT_FOUND"
+      httpStatus: 200
+    - errorCode: "1006"
+      message: "Invalid Credentials"
+      errorType: "INVALID_CREDENTIALS"
+      httpStatus: 200

@@ -1,0 +1,132 @@
+Configuration:
+  status: debug
+
+  Properties:
+    Property:
+      - name: log-path
+        value: ${sys:log.path:-service_logs}
+
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern:  "%d{yyyy-MM-dd HH:mm:ss} %-5p JID:%X{JID} %c{1}:%L [%t] - %m %n"
+      ThresholdFilter:
+        level: ${sys:consoleLoggingLevel:-TRACE}
+        onMatch: "ACCEPT"
+        onMismatch: "DENY"
+    RollingFile:
+      - name: Trace_Rolling_File_Appender
+        fileName: ${log-path}/TraceLog.log
+        filePattern: ${log-path}/TraceLog.log-%d{MM-dd-yyyy}.%i.log.gz
+        ignoreExceptions: false
+        SplunkJsonLayout:
+          prettyPrint: ${sys:prettyPrint:-false}
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: ${sys:logDaysPerLogFile:-1}
+          SizeBasedTriggeringPolicy:
+            size: ${sys:logSizeInMBPerLogFile:-10} MB
+        DefaultRolloverStrategy:
+          max: ${sys:maxLogFilesPerDays:-100}
+          Delete:
+            basePath: ${log-path}
+            IfFileName:
+              glob: "TraceLog.log-*.log.gz"
+            IfLastModified:
+              age: ${sys:maxAgeForLogsInDays:-30}d
+        LevelRangeFilter:
+          minLevel: "INFO"
+          maxLevel: "TRACE"
+          onMatch: "ACCEPT"
+          onMisMatch: "DENY"
+      - name: Warn_Rolling_File_Appender
+        fileName: ${log-path}/WarningLog.log
+        filePattern: ${log-path}/WarningLog.log-%d{MM-dd-yyyy}.%i.log.gz
+        ignoreExceptions: false
+        SplunkJsonLayout:
+          prettyPrint: ${sys:prettyPrint:-false}
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: ${sys:logDaysPerLogFile:-1}
+          SizeBasedTriggeringPolicy:
+            size: ${sys:logSizeInMBPerLogFile:-10} MB
+        DefaultRolloverStrategy:
+          max: ${sys:maxLogFilesPerDays:-100}
+          Delete:
+            basePath: ${log-path}
+            IfFileName:
+              glob: "WarningLog.log-*.log.gz"
+            IfLastModified:
+              age: ${sys:maxAgeForLogsInDays:-30}d
+        LevelRangeFilter:
+          minLevel: "WARN"
+          maxLevel: "WARN"
+          onMatch: "ACCEPT"
+          onMisMatch: "DENY"
+      - name: Error_Rolling_File_Appender
+        fileName: ${log-path}/ErrorLog.log
+        filePattern: ${log-path}/ErrorLog.log-%d{MM-dd-yyyy}.%i.log.gz
+        ignoreExceptions: false
+        SplunkJsonLayout:
+          prettyPrint: ${sys:prettyPrint:-false}
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: ${sys:logDaysPerLogFile:-1}
+          SizeBasedTriggeringPolicy:
+            size: ${sys:logSizeInMBPerLogFile:-10} MB
+        DefaultRolloverStrategy:
+          max: ${sys:maxLogFilesPerDays:-100}
+          Delete:
+            basePath: ${log-path}
+            IfFileName:
+              glob: "ErrorLog.log-*.log.gz"
+            IfLastModified:
+              age: ${sys:maxAgeForLogsInDays:-30}d
+        LevelRangeFilter:
+          minLevel: "FATAL"
+          maxLevel: "ERROR"
+          onMatch: "ACCEPT"
+          onMisMatch: "DENY"
+
+  Loggers:
+    Root:
+      includeLocation: true
+      level: DEBUG
+      AppenderRef:
+        - ref: Console_Appender
+
+    AsyncLogger:
+      - name: org.tfg.grant_java
+        level: TRACE
+        additivity: false
+        includeLocation: true
+        AppenderRef:
+          - ref: Console_Appender
+            level: TRACE
+          - ref: Trace_Rolling_File_Appender
+            level: TRACE
+          - ref: Debug_Rolling_File_Appender
+            level: DEBUG
+          - ref: Warn_Rolling_File_Appender
+            level: WARN
+          - ref: Error_Rolling_File_Appender
+            level: ERROR
+      - name: org.springframework.boot
+        level: INFO
+        additivity: false
+        includeLocation: true
+        AppenderRef:
+          - ref: Console_Appender
+            level: TRACE
+          - ref: Trace_Rolling_File_Appender
+            level: TRACE
+          - ref: Debug_Rolling_File_Appender
+            level: DEBUG
+          - ref: Warn_Rolling_File_Appender
+            level: WARN
+          - ref: Error_Rolling_File_Appender
+            level: ERROR
+          
+          

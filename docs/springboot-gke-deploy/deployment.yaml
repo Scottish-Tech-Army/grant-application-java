@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grannt-application
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: grannt-application
+  template:
+    metadata:
+      labels:
+        app: grannt-application
+    spec:
+      containers:
+        - name: grannt-application
+          image: us-central1-docker.pkg.dev/PROJECT_ID/backend-repo/grannt-application:v1
+          ports:
+            - containerPort: 8081

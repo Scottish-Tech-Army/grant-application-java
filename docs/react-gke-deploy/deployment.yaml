@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grant-hub
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: grant-hub
+  template:
+    metadata:
+      labels:
+        app: grant-hub
+    spec:
+      containers:
+        - name: grant-hub
+          image: us-central1-docker.pkg.dev/PROJECT_ID/my-react-repo/grant-hub:v1
+          ports:
+            - containerPort: 80
